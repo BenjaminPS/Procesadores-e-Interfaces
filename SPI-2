@@ -1,0 +1,42 @@
+/*
+
+*/
+#include <SPI.h>
+#define LED 7
+#define button 2
+int buttonvalue; // button pressed
+int x; // byte to send
+
+void setup() {
+    Serial.begin(115200);
+    pinMode(LED,OUTPUT);
+    pinMode(button,INPUT);
+    
+    SPI.begin();
+    SPI.setClockDivider(SPI_CLOCK_DIV8); // 2 MHz
+    digitalWrite(SS,HIGH); // disable master-slave comunication
+}
+
+void loop() {
+  byte Mastersend,Mastereceive;
+  buttonvalue = digitalRead(button);
+  if(buttonvalue==HIGH){
+    x=1;
+  }
+  else{
+    x=0;
+  }
+  
+  digitalWrite(SS,LOW); // enable master-slave comunication
+  Mastersend = x;
+  Mastereceive = SPI.transfer(Mastersend);
+  if(Mastereceive==1){
+    digitalWrite(LED,HIGH);
+    Serial.println("Master LED ON");
+  }
+  else{
+   digitalWrite(LED,LOW);
+    Serial.println("Master LED OFF");
+  }
+  delay(1000);
+}
